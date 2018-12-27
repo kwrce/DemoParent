@@ -1,0 +1,129 @@
+<#include "../include/header.html">
+<body>
+<div id="page-content">
+    <form id="mainform"  class="form-horizontal" method="post"
+          enctype="application/json;charset=UTF-8">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-11" style="float: left;margin-top: 0px;">
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="col-sm-2 control-label"><@spring.message
+                                "demo.myId"/>:</label>
+                            <div class="col-sm-4 ">
+                                <input type="number" required style="width:100%" name="myId"
+                                       data-bind="value:model.myId" class="k-textbox">
+                            </div>
+                            <div class="col-sm-6" >
+                                <span data-for="myId" class=".k-invalid-msg"></span>
+                            </div>
+                        </div>
+                        <div class="row" style="height: 15px;"></div>
+                        <div class="row">
+                            <label class="col-sm-2 control-label "><@spring.message
+                                "demo.myName"/>:</label>
+                            <div class="col-sm-4">
+                                <input type="text" required style="width:100%" name="myName"
+                                       data-bind="value:model.myName" class="k-textbox">
+                            </div>
+                            <div class="col-sm-6" >
+                                <span data-for="myName" class=".k-invalid-msg"></span>
+                            </div>
+                        </div>
+                        <div class="row" style="height: 15px;"></div>
+                        <div class="row">
+                            <label class="col-sm-2 control-label"><@spring.message
+                                "demo.myAge"/>:</label>
+                            <div class="col-sm-4">
+                                <input type="text" required style="width:100%" name="myAge"
+                                       data-bind="value:model.myAge" class="k-textbox">
+                            </div>
+                            <div class="col-sm-6" >
+                                <span data-for="myAge" class=".k-invalid-msg"></span>
+                            </div>
+                        </div>
+                        <div class="row" style="height: 15px;"></div>
+                        <div class="row">
+                            <label class="col-sm-2 control-label"><@spring.message
+                                "demo.myBirthday"/>:</label>
+                            <div class="col-sm-4">
+                                <input type="date" data-role="datepicker" class="k-datepicker" required style="width:100%" name="myBirthday"
+                                       data-bind="value:model.myBirthday" class="k-textbox">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right" style="bottom: 20px;position: fixed; right: 85px; float: left;
+        background: #fff;">
+    	    <span class="btn btn-success" data-bind="click:save" type="submit">
+            <@spring.message "hap.save"/></span>
+            <span class="btn btn-success" data-bind="click:closeWin" type="button">
+            <@spring.message "hap.cancel"/></span>
+        </div>
+    </form>
+</div>
+
+</body>
+<script>
+    var isEdit = false;
+    var myId = '${RequestParameters.myId!0}';
+    console.log(myId)
+    if (myId!=0) {
+        isEdit = true;
+        $.ajax({
+            url:   '${base.contextPath}/demo/query?myId=${RequestParameters.myId!0}',
+            success: function (args) {
+            var a0 = args.rows[0] || {};
+                console.log(a0)
+            for (var k in a0) {
+                viewModel.model.set(k, a0[k]);
+
+            }
+                for (var k in a0) {
+                    viewModel.model.set(k, a0[k]);
+                    console.log(viewModel.model.get(k))
+                }
+
+        }
+    });
+    }
+    var viewModel = kendo.observable({
+        model: {},
+        save: function(e){
+            var data= viewModel.model.toJSON();
+            if(isEdit){
+                data.__status = "update";
+            }else{
+                data.__status = "add";
+            }
+          //  var validator = $("#mainform").data("kendoValidator");
+            var validator = $("#mainform").kendoValidator().data("kendoValidator");
+
+            if (validator.validate()) {
+                $.ajax({
+                    type   : 'POST',
+                    url    : '${base.contextPath}/demo/submit',
+                    dataType : "json",
+                    contentType : "application/json",
+                    data   : kendo.stringify([data]),
+                    success: function (data) {
+                        if(data.success==false){
+                            kendo.ui.showErrorDialog({
+                                message:data.message
+                            });
+                        }else{
+                            window.parent.$("#dialog").data("kendoWindow").close();
+                        }
+                    }
+                });
+            }},
+        closeWin: function(e){
+            window.parent.$("#dialog").data("kendoWindow").close();
+        }});
+    kendo.bind($('#mainform'), viewModel);
+</script>
+
+</html>

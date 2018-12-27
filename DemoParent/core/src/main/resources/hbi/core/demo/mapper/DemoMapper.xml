@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.demo.mapper.DemoMapper">
+    <resultMap id="BaseResultMap" type="hbi.core.demo.dto.Demo">
+        <result column="MY_ID" property="myId" jdbcType="VARCHAR" />
+        <result column="MY_NAME" property="myName" jdbcType="VARCHAR" />
+        <result column="MY_AGE" property="myAge" jdbcType="DECIMAL" />
+        <result column="MY_BIRTHDAY" property="myBirthday" jdbcType="DATE" />
+    </resultMap>
+    <select id="selectByDemo" parameterType="hbi.core.demo.dto.Demo" resultMap="BaseResultMap">
+        SELECT m.MY_ID,
+        m.MY_NAME,
+        m.MY_AGE,
+        m.MY_BIRTHDAY
+        FROM my_test01 m
+        <where>
+            <if test="myId != null">
+                and m.MY_ID like #{myId,jdbcType=VARCHAR}
+            </if>
+            <if test="myName != null">
+                and m.MY_NAME like #{myName,jdbcType=VARCHAR}
+            </if>
+            <if test="myAge != null">
+                and m.MY_AGE = #{myAge,jdbcType=DECIMAL}
+            </if>
+            <if test="myBirthday != null">
+                and m.MY_BIRTHDAY = #{myBirthday,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertDemo" parameterType="hbi.core.demo.dto.Demo">
+        INSERT INTO my_test01
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="myId != null" >
+                MY_ID,
+            </if>
+            <if test="myName != null" >
+                MY_NAME,
+            </if>
+            <if test="myAge != null">
+                MY_AGE,
+            </if>
+            <if test="myBirthday != null">
+                MY_BIRTHDAY,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="myId != null" >
+                #{myId,jdbcType=VARCHAR},
+            </if>
+            <if test="myName != null" >
+                #{myName,jdbcType=VARCHAR},
+            </if>
+            <if test="myAge != null">
+                #{myAge,jdbcType=DECIMAL},
+            </if>
+            <if test="myBirthday != null">
+                #{myBirthday,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateDemo" parameterType="hbi.core.demo.dto.Demo" >
+        update my_test01
+        <set >
+            <if test="myId != null" >
+                MY_ID = #{myId,jdbcType=VARCHAR},
+            </if>
+            <if test="myName != null" >
+                MY_NAME = #{myName,jdbcType=VARCHAR},
+            </if>
+            <if test="myAge != null">
+                MY_AGE = #{myAge,jdbcType=DECIMAL},
+            </if>
+            <if test="myBirthday != null">
+                MY_BIRTHDAY = #{myBirthday,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where MY_ID = #{myId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteDemo" parameterType="hbi.core.demo.dto.Demo" >
+        delete from my_test01
+        where MY_ID= #{myId,jdbcType=DECIMAL}
+    </delete>
+
+
+</mapper>
