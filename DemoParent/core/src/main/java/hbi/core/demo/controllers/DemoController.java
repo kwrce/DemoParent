@@ -29,7 +29,6 @@ public class DemoController extends BaseController {
     public ResponseData selectList(HttpServletRequest request, Demo condition,
                                    @RequestParam(defaultValue = DEFAULT_PAGE) int page,
                                    @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pagesize) {
-        System.out.println("=========================selectList==============================");
         IRequest iRequest = createRequestContext(request);
         List<Demo> datas = demoService.selectByDemo(iRequest, condition, page,
                 pagesize);
